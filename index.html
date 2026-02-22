@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>диана · 50 проверок · конверт</title>
+    <title>??? · двадцать шагов</title>
     <style>
-        /* ===== СБРОС И БАЗОВАЯ ЭСТЕТИКА ===== */
         * {
             margin: 0;
             padding: 0;
@@ -13,352 +12,295 @@
         }
 
         body {
+            background: #0b0509;
             min-height: 100vh;
-            background: radial-gradient(circle at 30% 10%, #2b1a24 0%, #120b10 100%);
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 16px;
             position: relative;
-            line-height: 1.5;
         }
 
-        /* мягкое свечение по краям */
+        /* Глубокий космический фон с намёком на свет */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle at 70% 90%, rgba(255, 190, 200, 0.08) 0%, transparent 50%);
-            pointer-events: none;
+            background: radial-gradient(circle at 40% 50%, #2c1422 0%, #020001 90%);
+            z-index: -2;
         }
 
-        /* главный контейнер — стеклянный шар */
-        .ritual {
-            max-width: 820px;
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="2" cy="3" r="1" fill="white" opacity="0.1"/><circle cx="70" cy="20" r="1.2" fill="white" opacity="0.1"/><circle cx="30" cy="80" r="0.8" fill="white" opacity="0.1"/><circle cx="85" cy="70" r="1" fill="white" opacity="0.1"/></svg>');
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        /* Основное окно — стекло, мрак, полупрозрачность */
+        .ritual-container {
             width: 100%;
-            background: rgba(22, 14, 20, 0.6);
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-            border-radius: 3.5rem 3.5rem 3rem 3rem;
-            border: 1px solid rgba(255, 170, 190, 0.2);
-            box-shadow: 0 30px 60px -20px #0a0408, 0 0 0 1px rgba(255, 140, 170, 0.15) inset, 0 0 40px rgba(255, 150, 190, 0.3);
-            padding: 2.2rem 2rem 2.5rem;
-            transition: box-shadow 0.3s;
+            max-width: 560px;
+            background: rgba(8, 3, 6, 0.7);
+            backdrop-filter: blur(18px) saturate(160%);
+            -webkit-backdrop-filter: blur(18px) saturate(160%);
+            border-radius: 52px;
+            border: 1px solid rgba(255, 140, 170, 0.25);
+            box-shadow: 0 30px 60px -20px #000, 0 0 0 1px rgba(255, 100, 150, 0.2) inset, 0 0 60px rgba(255, 80, 140, 0.2);
+            padding: 32px 28px;
+            transition: box-shadow 0.4s;
         }
 
-        /* заголовок — только намёк */
-        .title {
+        /* Счётчик шагов — едва заметно */
+        .step-counter {
             text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .title-main {
-            font-size: 1.9rem;
-            font-weight: 300;
+            margin-bottom: 32px;
+            font-weight: 200;
             letter-spacing: 6px;
+            color: #7a5b6a;
+            font-size: 13px;
             text-transform: uppercase;
-            color: #ffe3ec;
-            text-shadow: 0 0 20px #ff9fc5, 0 4px 10px #2a0e1c;
-            background: linear-gradient(135deg, #ffdae9, #ffb1cc);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            opacity: 0.95;
+            word-spacing: 8px;
+            border-bottom: 1px dashed rgba(255, 180, 200, 0.2);
+            padding-bottom: 18px;
         }
 
-        .title-sub {
-            font-size: 0.9rem;
+        .step-number {
+            font-size: 36px;
             font-weight: 300;
-            color: #b294a4;
-            letter-spacing: 4px;
-            margin-top: 0.3rem;
-            word-spacing: 6px;
+            color: #b28b9f;
+            line-height: 1;
+            margin-top: 6px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 12px #ff99bb60;
         }
 
-        /* прогресс — едва заметная нить */
-        .progress-hint {
-            margin: 2.2rem 0 2rem;
-        }
-
-        .progress-track {
-            height: 2px;
-            background: rgba(255, 200, 220, 0.12);
-            border-radius: 10px;
-            box-shadow: 0 0 6px #ff99bb40;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #ffb0cb, #ffd0df, #ffb8d2);
-            box-shadow: 0 0 18px #ffa5c0, 0 0 8px #ffc0cb;
-            transition: width 0.35s cubic-bezier(0.46, 0.03, 0.52, 0.96);
-        }
-
-        /* счетчик — почти невидим, но знаешь */
-        .count-digits {
-            font-size: 0.8rem;
-            text-align: right;
-            margin-top: 0.4rem;
-            color: #7a5f6b;
-            font-weight: 300;
-            letter-spacing: 3px;
-        }
-
-        /* ===== СЕТКА ПРОВЕРОК ===== */
-        .check-collection {
+        /* Контентная область — здесь капчи */
+        .challenge-area {
+            min-height: 300px;
             display: flex;
             flex-direction: column;
-            gap: 0.7rem;
-            max-height: 380px;
-            overflow-y: auto;
-            padding: 0.3rem 0.3rem 0.3rem 0.5rem;
-            margin: 1.8rem 0 2rem;
-            scrollbar-width: thin;
-            scrollbar-color: #46323b #1e131a;
-        }
-
-        .check-collection::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .check-collection::-webkit-scrollbar-track {
-            background: #1e131a;
-            border-radius: 20px;
-        }
-
-        .check-collection::-webkit-scrollbar-thumb {
-            background: #59414b;
-            border-radius: 20px;
-            border: 1px solid #ab7f92;
-        }
-
-        /* одна проверка — как полупрозрачная плитка */
-        .check-item {
-            background: rgba(18, 10, 15, 0.7);
-            border: 1px solid rgba(255, 160, 185, 0.2);
-            border-radius: 3rem;
-            padding: 0.9rem 1.5rem 0.9rem 1.8rem;
-            display: flex;
             align-items: center;
-            justify-content: space-between;
-            backdrop-filter: blur(4px);
-            box-shadow: 0 12px 18px -15px black;
-            transition: border-color 0.25s, background 0.3s, box-shadow 0.2s;
+            justify-content: center;
+            margin: 24px 0 28px;
         }
 
-        .check-item:hover {
-            border-color: rgba(255, 130, 170, 0.5);
-            background: rgba(28, 18, 24, 0.8);
-            box-shadow: 0 0 14px rgba(255, 150, 200, 0.3);
-        }
-
-        /* левая часть — эмодзи и тип */
-        .check-label {
-            display: flex;
-            align-items: center;
-            gap: 1.2rem;
-            color: #fad1e0;
-            font-weight: 320;
-            font-size: 0.95rem;
-        }
-
-        .check-icon {
-            font-size: 1.6rem;
-            line-height: 1;
-            filter: drop-shadow(0 0 5px #ff99bb);
-            opacity: 0.9;
-            width: 2rem;
+        /* Стили для разных капч — красиво, загадочно, без спойлеров */
+        .captcha-title {
+            font-size: 24px;
+            font-weight: 300;
+            color: #fcd5e3;
             text-align: center;
+            margin-bottom: 36px;
+            background: rgba(255, 200, 230, 0.05);
+            padding: 14px 24px;
+            border-radius: 80px;
+            border: 1px solid rgba(255, 140, 180, 0.3);
+            backdrop-filter: blur(4px);
+            letter-spacing: 2px;
         }
 
-        .check-name {
-            opacity: 0.8;
-            letter-spacing: 0.3px;
-            background: rgba(255, 200, 230, 0.03);
-            padding: 0.2rem 1rem;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 180, 200, 0.15);
-            font-size: 0.9rem;
-        }
-
-        /* правый блок действия */
-        .check-action {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        /* универсальная кнопка */
-        .check-btn {
-            background: rgba(15, 8, 12, 0.7);
-            border: 1.5px solid rgba(255, 150, 180, 0.7);
-            color: #ffd2e0;
-            padding: 0.5rem 1.4rem;
-            border-radius: 3rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-            letter-spacing: 1.2px;
+        /* кнопки действия */
+        .action-btn {
+            background: rgba(20, 8, 14, 0.8);
+            border: 2px solid rgba(255, 150, 190, 0.8);
+            color: #ffe2f0;
+            padding: 16px 42px;
+            border-radius: 60px;
+            font-size: 18px;
+            font-weight: 400;
+            letter-spacing: 4px;
             text-transform: uppercase;
             cursor: pointer;
-            backdrop-filter: blur(10px);
-            transition: 0.2s;
-            box-shadow: 0 0 10px rgba(255, 130, 170, 0.2);
+            backdrop-filter: blur(12px);
+            transition: 0.25s;
+            box-shadow: 0 0 20px rgba(255, 100, 150, 0.3);
+            margin-top: 20px;
+            width: fit-content;
         }
 
-        .check-btn:hover {
+        .action-btn:hover {
             background: #ffb0c7;
-            border-color: #ffeef4;
-            color: #170d13;
-            box-shadow: 0 0 25px #ffa5c0;
+            border-color: #fff0f5;
+            color: #160a11;
+            box-shadow: 0 0 40px #ffaac5;
+            transform: scale(1.02);
         }
 
-        .check-btn:active {
-            transform: scale(0.96);
+        .action-btn:active {
+            transform: scale(0.97);
         }
 
-        /* ползунок (имитация сложности) */
-        .slider-toy {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 0.3rem 0.8rem;
-            border-radius: 3rem;
-            border: 1px solid #b28b9b40;
+        /* Поле ввода */
+        .text-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #ff99bb80;
+            border-radius: 60px;
+            padding: 16px 28px;
+            width: 80%;
+            color: #ffeef4;
+            font-size: 18px;
+            outline: none;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            margin: 16px 0;
+            transition: 0.2s;
         }
 
-        .slider-pretend {
-            width: 100px;
-            height: 5px;
-            background: #352b31;
-            border-radius: 10px;
+        .text-input:focus {
+            border-color: #ffc0d5;
+            box-shadow: 0 0 30px #ff99bb;
+        }
+
+        /* Ползунок */
+        .slider-elegant {
+            width: 70%;
+            height: 8px;
+            background: #2e1f28;
+            border-radius: 20px;
             -webkit-appearance: none;
             appearance: none;
+            margin: 30px 0;
         }
 
-        .slider-pretend::-webkit-slider-thumb {
+        .slider-elegant::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            background: radial-gradient(#ffc0d5, #ff9eb9);
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(#ffb8d2, #ff8eb5);
             border-radius: 50%;
-            border: 2px solid white;
-            box-shadow: 0 0 15px #ffa5c0;
+            border: 3px solid white;
+            box-shadow: 0 0 30px #ff99bb;
             cursor: pointer;
-            transition: 0.1s;
         }
 
-        .slider-pretend::-webkit-slider-thumb:hover {
-            transform: scale(1.15);
-            background: #ffbcd2;
-        }
-
-        /* капча-имитация */
-        .captcha-mock {
+        /* Чекбокс-капча */
+        .captcha-check-lux {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
-            background: #1d121b;
-            padding: 0.2rem 0.8rem 0.2rem 0.4rem;
-            border-radius: 3rem;
-            border: 1px solid #a8728b;
+            gap: 18px;
+            background: #1f131b80;
+            padding: 12px 28px;
+            border-radius: 60px;
+            border: 1px solid #ffb0c7;
+            margin: 20px 0;
         }
 
-        .captcha-square {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            background: #2c1c26;
-            border: 2px solid #ffadc0;
-            display: inline-block;
+        .fake-checkbox {
+            width: 32px;
+            height: 32px;
+            background: #2a1923;
+            border-radius: 10px;
+            border: 3px solid #ff9eb9;
             cursor: pointer;
             transition: 0.15s;
         }
 
-        .captcha-square.checked {
+        .fake-checkbox.checked {
             background: #ffb0c3;
-            box-shadow: 0 0 18px #ff99bb;
+            box-shadow: 0 0 40px #ffa5c0;
             border-color: white;
             position: relative;
         }
 
-        .captcha-square.checked::after {
+        .fake-checkbox.checked::after {
             content: "✓";
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #180d13;
+            color: #1a0b13;
+            font-size: 24px;
             font-weight: 900;
-            font-size: 1.1rem;
             line-height: 1;
         }
 
-        .captcha-label {
-            color: #b28f9f;
-            font-size: 0.75rem;
-            text-transform: uppercase;
+        .captcha-text {
+            color: #ffd2e2;
+            font-size: 20px;
+            font-weight: 300;
         }
 
-        /* завершённая проверка */
-        .check-item.completed {
-            opacity: 0.5;
-            background: rgba(10, 5, 8, 0.8);
-            border-color: rgba(255, 150, 180, 0.2);
-            filter: grayscale(0.5);
-            pointer-events: none;
+        /* Выбор картинок (имитация) */
+        .image-panel {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 30px 0;
         }
 
-        .check-item.completed .check-name {
-            text-decoration: line-through 1px #ff99bb;
-            text-decoration-color: #ff99bb80;
+        .image-option {
+            width: 80px;
+            height: 80px;
+            background: #32262e;
+            border-radius: 24px;
+            border: 3px solid #a66f86;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            transition: 0.15s;
+            box-shadow: 0 0 10px #ff99bb40;
         }
 
-        /* ===== КОНВЕРТ — АБСОЛЮТНАЯ КУЛЬМИНАЦИЯ ===== */
-        .envelope-altar {
-            margin-top: 2.5rem;
+        .image-option:hover {
+            border-color: #ffb0cb;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px #ff99bb;
+        }
+
+        .image-option.selected {
+            border-color: #ffd0df;
+            background: #ffb0c340;
+            box-shadow: 0 0 40px #ff9eb9;
+        }
+
+        /* область конверта (появляется после 20 шагов) */
+        .envelope-screen {
             display: flex;
             flex-direction: column;
             align-items: center;
-            border-top: 1px dashed rgba(255, 150, 190, 0.3);
-            padding-top: 2.2rem;
+            justify-content: center;
+            min-height: 400px;
         }
 
-        .envelope-sculpture {
+        .envelope-wrapper {
             perspective: 1400px;
-            margin-bottom: 0.8rem;
+            margin: 30px 0 20px;
         }
 
-        .envelope-object {
-            width: 200px;
-            height: 140px;
+        .envelope {
+            width: 240px;
+            height: 170px;
             background: #ffdae8;
-            border-radius: 22px 22px 16px 16px;
+            border-radius: 28px 28px 20px 20px;
             position: relative;
-            box-shadow: 0 30px 30px -15px #030103, 0 0 0 2px #ffb6c9 inset, 0 0 0 4px #ffeef2 inset;
+            box-shadow: 0 30px 40px -10px #000, 0 0 0 2px #ffb6c9 inset, 0 0 0 4px #ffeef2 inset;
             cursor: pointer;
-            transition: transform 0.25s ease, filter 0.3s;
+            transition: transform 0.3s, filter 0.3s;
             transform-style: preserve-3d;
         }
 
-        .envelope-object:hover {
+        .envelope:hover {
             transform: scale(1.02);
-            filter: brightness(1.1) drop-shadow(0 0 16px #ff9fc8);
+            filter: brightness(1.15) drop-shadow(0 0 20px #ff99bb);
         }
 
         .flap {
             position: absolute;
             top: 0;
             width: 100%;
-            height: 72px;
+            height: 85px;
             background: #ffc9db;
-            border-radius: 22px 22px 70% 70%;
+            border-radius: 28px 28px 70% 70%;
             border-bottom: 3px solid #ff99bb;
             box-shadow: 0 -4px 8px #b27b90 inset;
             transform-origin: top;
-            transition: transform 0.9s cubic-bezier(0.65, -0.4, 0.35, 1.5);
+            transition: transform 0.9s cubic-bezier(0.65, -0.3, 0.35, 1.4);
             transform: rotateX(0deg);
             z-index: 5;
         }
@@ -367,291 +309,352 @@
             position: absolute;
             bottom: 0;
             width: 100%;
-            height: 85px;
+            height: 100px;
             background: #ffd2e4;
-            border-radius: 0 0 16px 16px;
+            border-radius: 0 0 20px 20px;
             z-index: 1;
         }
 
-        .valentine-card {
+        .card {
             position: absolute;
-            top: 22px;
-            left: 15px;
-            right: 15px;
+            top: 30px;
+            left: 20px;
+            right: 20px;
             background: #fff3f9;
-            border-radius: 22px;
-            padding: 22px 12px;
+            border-radius: 28px;
+            padding: 30px 15px;
             text-align: center;
-            box-shadow: 0 20px 30px -10px #3f1e2f;
-            border: 3px solid white;
+            box-shadow: 0 25px 35px -10px #3f1e2f;
+            border: 4px solid white;
             z-index: 20;
             opacity: 0;
             transform: translateY(-20px) scale(0.8);
-            transition: opacity 0.6s ease, transform 0.7s ease;
+            transition: opacity 0.7s ease, transform 0.8s ease;
             pointer-events: none;
             font-family: 'Brush Script MT', 'Segoe Script', 'cursive', 'sans-serif';
         }
 
-        .envelope-object.open .flap {
+        .envelope.open .flap {
             transform: rotateX(180deg);
         }
 
-        .envelope-object.open .valentine-card {
+        .envelope.open .card {
             opacity: 1;
-            transform: translateY(-60px) scale(1);
-            transition-delay: 0.25s;
+            transform: translateY(-70px) scale(1);
+            transition-delay: 0.3s;
         }
 
-        .verse {
-            font-size: 2.2rem;
-            background: linear-gradient(145deg, #c72463, #9f2153);
+        .message-big {
+            font-size: 2.8rem;
+            background: linear-gradient(145deg, #d53070, #af2054);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             font-weight: 800;
             line-height: 1.3;
-            text-shadow: 0 0 30px #ffaac8, 0 0 60px #ffc0d0;
-            letter-spacing: 1.5px;
+            text-shadow: 0 0 40px #ffaac8, 0 0 80px #ffc0d0;
         }
 
-        .kiss {
-            font-size: 2.6rem;
-            filter: drop-shadow(0 0 14px crimson);
-            margin-top: 5px;
+        .kiss-big {
+            font-size: 3.5rem;
+            filter: drop-shadow(0 0 25px crimson);
+            margin-top: 8px;
         }
 
-        /* нет счётчиков, нет подсказок — только эстетика */
-        .no-hint {
-            user-select: none;
+        /* скрытые экраны */
+        .screen {
+            display: none;
         }
 
-        /* микро-состояние для заблокированного конверта (но визуально никаких подсказок) */
-        .envelope-object.inactive {
-            opacity: 0.7;
-            filter: grayscale(0.6);
-            cursor: not-allowed;
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
         }
 
-        .envelope-object.inactive:hover {
-            transform: none;
-            filter: grayscale(0.6);
-        }
-
-        /* пустой намёк в консоль, но на странице — ни слова */
+        /* подпись в телеге — только в коде, как завещал Рик */
     </style>
 </head>
 <body>
 
-<div class="ritual">
-    <div class="title">
-        <div class="title-main">диана</div>
-        <div class="title-sub">пятьдесят отражений</div>
-    </div>
-
-    <!-- прогресс без текстовых подсказок (только визуально) -->
-    <div class="progress-hint">
-        <div class="progress-track">
-            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+<div class="ritual-container" id="app">
+    <!-- Экран с капчами (шаги 1–20) -->
+    <div id="captchaScreen" class="screen active">
+        <div class="step-counter">
+            <div>ПУТЬ</div>
+            <div class="step-number" id="stepDisplay">1/20</div>
         </div>
-        <div class="count-digits" id="counterDisplay">⏣ 0/50</div>
+        <div class="challenge-area" id="challengeArea">
+            <!-- сюда динамически грузится текущая капча -->
+        </div>
     </div>
 
-    <!-- контейнер проверок -->
-    <div class="check-collection" id="checkCollection"></div>
-
-    <!-- алтарь конверта -->
-    <div class="envelope-altar">
-        <div class="envelope-sculpture">
-            <div class="envelope-object" id="envelopeObject">
-                <div class="flap"></div>
-                <div class="envelope-body"></div>
-                <div class="valentine-card">
-                    <div class="verse">Диана,<br>я тебя очень сильно люблю</div>
-                    <div class="kiss">💋</div>
+    <!-- Экран с конвертом (финал) -->
+    <div id="envelopeScreen" class="screen">
+        <div class="envelope-screen">
+            <div class="envelope-wrapper">
+                <div class="envelope" id="finalEnvelope">
+                    <div class="flap"></div>
+                    <div class="envelope-body"></div>
+                    <div class="card">
+                        <div class="message-big">???,<br>я тебя очень сильно люблю</div>
+                        <div class="kiss-big">💋</div>
+                    </div>
                 </div>
             </div>
+            <!-- Нет подсказок — только конверт -->
         </div>
-        <!-- здесь нет никаких hint/подсказок — абсолютная тишина -->
     </div>
 </div>
 
 <script>
     (function() {
-        // ー  Рик: «50 проверок, Морти. Никаких подсказок, только эстетика и Диана» ー
-        const TOTAL = 50;
-        let completed = 0;
-        let envelopeLocked = true;
+        // Рик: «20 шагов верификации, Морти. Никаких спойлеров, только ??? и эстетика.»
 
-        const checksContainer = document.getElementById('checkCollection');
-        const progressFill = document.getElementById('progressFill');
-        const counterDisplay = document.getElementById('counterDisplay');
-        const envelope = document.getElementById('envelopeObject');
+        const TOTAL_STEPS = 20;
+        let currentStep = 0; // 0-19 (20 шагов)
+        let challengesPassed = new Array(TOTAL_STEPS).fill(false);
 
-        // генерация 50 изысканных названий (без цифр-хинтов)
-        const baseNames = [
-            'капча отражения', 'ползунок верности', 'проверка жеста', 'доказательство не-робота', 'выбор сердец',
-            'лабиринт касаний', 'анти-бот ритуал', 'звуковой отклик', 'память взгляда', 'скрытый образ',
-            'порог чувств', 'контроль пульса', 'знак бесконечности', 'цифровая тень', 'прикосновение',
-            'эхо профиля', 'вторая капча', 'проверка света', 'движение губ', 'артефакт',
-            'тест доверия', 'зеркальный лабиринт', 'розовый фильтр', 'код доступа', 'биометрия',
-            'энергетика', 'слепок времени', 'свечение', 'мелодия касания', 'проходная',
-            'капча истины', 'жест любви', 'знак ди', 'фантом', 'проверка 36',
-            'слеза', 'плавность', 'квинтэссенция', 'нимб', 'антиспам дрим',
-            'провокация', 'отражение зрачка', 'интонация', 'тензор', 'пульсар',
-            'сорок шестой', 'предпоследний шаг', 'сорок восемь', 'сорок девять', 'пятьдесят'
+        const captchaScreen = document.getElementById('captchaScreen');
+        const envelopeScreen = document.getElementById('envelopeScreen');
+        const stepDisplay = document.getElementById('stepDisplay');
+        const challengeArea = document.getElementById('challengeArea');
+        const finalEnvelope = document.getElementById('finalEnvelope');
+
+        // Массив с типами капч для 20 шагов (у каждого своя логика)
+        const challengeTypes = [
+            'checkbox', 'slider', 'text_simple', 'image_select', 'math',
+            'checkbox', 'slider', 'text_reverse', 'image_select', 'math_advanced',
+            'checkbox', 'slider', 'text_color', 'image_select', 'logic',
+            'checkbox', 'slider', 'text_cyrillic', 'image_select', 'final_captcha'
         ];
 
-        function generateChecks() {
-            const arr = [];
-            for (let i = 0; i < TOTAL; i++) {
-                arr.push({
-                    id: i,
-                    name: baseNames[i] || `проверка ${i+1}`,
-                    completed: false,
-                    style: i % 4  // для разнообразия контролов
-                });
-            }
-            return arr;
+        // Генерация вопроса для текстовых капч (чтобы не повторялись)
+        function getTextChallenge(step) {
+            const questions = [
+                { q: 'введите "???"', a: '???' },
+                { q: 'напишите "любовь"', a: 'любовь' },
+                { q: 'код доступа: ???', a: '???' },
+                { q: 'введите "спасибо"', a: 'спасибо' },
+                { q: 'слово: ???', a: '???' },
+                { q: 'напишите "конверт"', a: 'конверт' },
+                { q: '???', a: '???' },
+                { q: 'введите "секрет"', a: 'секрет' },
+                { q: 'пароль: ???', a: '???' },
+                { q: 'введите "финал"', a: 'финал' },
+            ];
+            return questions[step % questions.length] || { q: '???', a: '???' };
         }
 
-        let checks = generateChecks();
+        // Отрисовка текущего испытания
+        function renderChallenge(step) {
+            const type = challengeTypes[step % challengeTypes.length];
+            let html = '';
 
-        function renderAll() {
-            checksContainer.innerHTML = '';
-            checks.forEach((ch) => {
-                const item = document.createElement('div');
-                item.className = `check-item ${ch.completed ? 'completed' : ''}`;
-                item.dataset.id = ch.id;
+            // общий заголовок (без цифр)
+            const title = `<div class="captcha-title">???</div>`;
 
-                // левая часть
-                const leftDiv = document.createElement('div');
-                leftDiv.className = 'check-label';
-                const iconSpan = document.createElement('span');
-                iconSpan.className = 'check-icon';
-                const icons = ['◈', '◊', '○', '✧', '❀', '♡', '◇', '✤', '☾', '♢'];
-                iconSpan.textContent = ch.completed ? '✓' : (icons[ch.id % icons.length] || '♤');
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'check-name';
-                nameSpan.textContent = ch.name;
+            if (type === 'checkbox') {
+                html = `
+                    ${title}
+                    <div class="captcha-check-lux">
+                        <span class="fake-checkbox" id="dynamicCheckbox"></span>
+                        <span class="captcha-text">я не робот</span>
+                    </div>
+                    <button class="action-btn" id="submitChallenge" disabled style="opacity:0.5;">→</button>
+                `;
+            } else if (type === 'slider') {
+                html = `
+                    ${title}
+                    <input type="range" min="0" max="100" value="0" class="slider-elegant" id="dynamicSlider">
+                    <button class="action-btn" id="submitChallenge" disabled style="opacity:0.5;">→</button>
+                `;
+            } else if (type.includes('text')) {
+                const challenge = getTextChallenge(step);
+                html = `
+                    ${title}
+                    <div style="color:#f0c0d0; margin-bottom:12px;">${challenge.q}</div>
+                    <input type="text" class="text-input" id="dynamicText" placeholder="...">
+                    <button class="action-btn" id="submitChallenge" disabled style="opacity:0.5;">→</button>
+                `;
+            } else if (type === 'image_select') {
+                html = `
+                    ${title}
+                    <div class="image-panel" id="imagePanel">
+                        <div class="image-option" data-img="1">🌸</div>
+                        <div class="image-option" data-img="2">💫</div>
+                        <div class="image-option" data-img="3">🌙</div>
+                        <div class="image-option" data-img="4">⭐</div>
+                    </div>
+                    <button class="action-btn" id="submitChallenge" disabled style="opacity:0.5;">→</button>
+                `;
+            } else if (type === 'math' || type === 'math_advanced') {
+                const a = Math.floor(Math.random() * 7) + 3;
+                const b = Math.floor(Math.random() * 5) + 2;
+                const op = ['+', '−'][Math.floor(Math.random() * 2)];
+                let ans = op === '+' ? a + b : a - b;
+                if (type === 'math_advanced') ans = a * b; // усложним
+                html = `
+                    ${title}
+                    <div style="color:#ffd2e2; font-size:36px; margin:20px;">${a} ${op} ${b} = ?</div>
+                    <input type="number" class="text-input" id="mathAnswer" style="width:120px;" placeholder="...">
+                    <button class="action-btn" id="submitChallenge" disabled style="opacity:0.5;">→</button>
+                `;
+                // сохраним ответ в data
+                challengeArea.dataset.mathAnswer = (op === '+' ? a + b : (op === '−' ? a - b : a * b));
+            } else if (type === 'logic') {
+                html = `
+                    ${title}
+                    <div class="captcha-check-lux" style="flex-direction:column; gap:10px;">
+                        <div style="color:#fddae9;">выберите "???"</div>
+                        <div style="display:flex; gap:25px;">
+                            <span class="fake-checkbox" id="logicYes"></span><span style="color:white;"> ??? </span>
+                            <span class="fake-checkbox" id="logicNo"></span><span style="color:white;"> ??? </span>
+                        </div>
+                    </div>
+                    <button class="action-btn" id="submitChallenge" disabled style="opacity:0.5;">→</button>
+                `;
+            } else {
+                // fallback
+                html = `${title}<button class="action-btn" id="submitChallenge">→</button>`;
+            }
 
-                leftDiv.appendChild(iconSpan);
-                leftDiv.appendChild(nameSpan);
+            challengeArea.innerHTML = html;
 
-                // правая часть (действие)
-                const rightDiv = document.createElement('div');
-                rightDiv.className = 'check-action';
-
-                if (!ch.completed) {
-                    if (ch.style === 0 || ch.style === 2) {
-                        const btn = document.createElement('button');
-                        btn.className = 'check-btn';
-                        btn.textContent = '◈';
-                        btn.onclick = (e) => {
-                            e.stopPropagation();
-                            completeCheck(ch.id);
-                        };
-                        rightDiv.appendChild(btn);
-                    } else if (ch.style === 1) {
-                        const sliderWrap = document.createElement('div');
-                        sliderWrap.className = 'slider-toy';
-                        sliderWrap.innerHTML = '<input type="range" min="0" max="100" value="0" class="slider-pretend" id="slider-' + ch.id + '">';
-                        const slider = sliderWrap.querySelector('input');
-                        slider.addEventListener('input', (e) => {
-                            if (parseInt(e.target.value) >= 95) {
-                                completeCheck(ch.id);
-                            }
-                        });
-                        rightDiv.appendChild(sliderWrap);
-                    } else if (ch.style === 3) {
-                        const captchaWrap = document.createElement('div');
-                        captchaWrap.className = 'captcha-mock';
-                        const square = document.createElement('span');
-                        square.className = 'captcha-square';
-                        square.onclick = (e) => {
-                            e.stopPropagation();
-                            square.classList.add('checked');
-                            completeCheck(ch.id);
-                        };
-                        captchaWrap.appendChild(square);
-                        const label = document.createElement('span');
-                        label.className = 'captcha-label';
-                        label.textContent = '⋆';
-                        captchaWrap.appendChild(label);
-                        rightDiv.appendChild(captchaWrap);
+            // Навешиваем логику в зависимости от типа
+            if (type === 'checkbox') {
+                const cb = document.getElementById('dynamicCheckbox');
+                const btn = document.getElementById('submitChallenge');
+                cb.addEventListener('click', function(e) {
+                    cb.classList.toggle('checked');
+                    if (cb.classList.contains('checked')) {
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
                     } else {
-                        const btn = document.createElement('button');
-                        btn.className = 'check-btn';
-                        btn.textContent = '✓';
-                        btn.onclick = (e) => {
-                            e.stopPropagation();
-                            completeCheck(ch.id);
-                        };
-                        rightDiv.appendChild(btn);
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
                     }
-                } else {
-                    const doneMarker = document.createElement('span');
-                    doneMarker.textContent = '✔';
-                    doneMarker.style.color = '#ae8b9b';
-                    doneMarker.style.fontSize = '1.2rem';
-                    rightDiv.appendChild(doneMarker);
-                }
-
-                item.appendChild(leftDiv);
-                item.appendChild(rightDiv);
-                checksContainer.appendChild(item);
-            });
-            updateProgress();
-        }
-
-        function completeCheck(id) {
-            const check = checks.find(c => c.id === id);
-            if (!check || check.completed) return;
-            check.completed = true;
-            completed = checks.filter(c => c.completed).length;
-            renderAll(); 
-            // прогресс обновится внутри renderAll -> updateProgress
-        }
-
-        function updateProgress() {
-            const percent = (completed / TOTAL) * 100;
-            progressFill.style.width = percent + '%';
-            counterDisplay.textContent = `⏣ ${completed}/${TOTAL}`;
-
-            if (completed >= TOTAL && envelopeLocked) {
-                envelopeLocked = false;
-                envelope.classList.remove('inactive');
-                envelope.style.cursor = 'pointer';
-            } else if (completed < TOTAL && envelopeLocked === false) {
-                envelopeLocked = true;
-                envelope.classList.add('inactive');
-            } else if (completed < TOTAL) {
-                envelope.classList.add('inactive');
+                });
+                btn.addEventListener('click', () => stepComplete());
+            }
+            else if (type === 'slider') {
+                const slider = document.getElementById('dynamicSlider');
+                const btn = document.getElementById('submitChallenge');
+                slider.addEventListener('input', function() {
+                    if (parseInt(slider.value) >= 95) {
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                    } else {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                    }
+                });
+                btn.addEventListener('click', () => stepComplete());
+            }
+            else if (type.includes('text')) {
+                const input = document.getElementById('dynamicText');
+                const btn = document.getElementById('submitChallenge');
+                const challenge = getTextChallenge(step);
+                input.addEventListener('input', function() {
+                    if (input.value.trim().toLowerCase() === challenge.a.toLowerCase()) {
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                    } else {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                    }
+                });
+                btn.addEventListener('click', () => stepComplete());
+            }
+            else if (type === 'image_select') {
+                const options = document.querySelectorAll('.image-option');
+                const btn = document.getElementById('submitChallenge');
+                let selected = null;
+                options.forEach(opt => {
+                    opt.addEventListener('click', () => {
+                        options.forEach(o => o.classList.remove('selected'));
+                        opt.classList.add('selected');
+                        selected = opt.dataset.img;
+                        if (selected) {
+                            btn.disabled = false;
+                            btn.style.opacity = '1';
+                        }
+                    });
+                });
+                btn.addEventListener('click', () => stepComplete());
+            }
+            else if (type === 'math' || type === 'math_advanced') {
+                const input = document.getElementById('mathAnswer');
+                const btn = document.getElementById('submitChallenge');
+                const correct = challengeArea.dataset.mathAnswer;
+                input.addEventListener('input', function() {
+                    if (parseInt(input.value) === parseInt(correct)) {
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                    } else {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                    }
+                });
+                btn.addEventListener('click', () => stepComplete());
+            }
+            else if (type === 'logic') {
+                const yesBox = document.getElementById('logicYes');
+                const noBox = document.getElementById('logicNo');
+                const btn = document.getElementById('submitChallenge');
+                let checkedYes = false;
+                yesBox.addEventListener('click', () => {
+                    yesBox.classList.toggle('checked');
+                    if (yesBox.classList.contains('checked')) {
+                        checkedYes = true;
+                        noBox.classList.remove('checked');
+                    } else {
+                        checkedYes = false;
+                    }
+                    btn.disabled = !checkedYes;
+                    btn.style.opacity = checkedYes ? '1' : '0.5';
+                });
+                noBox.addEventListener('click', () => {
+                    noBox.classList.toggle('checked');
+                    if (noBox.classList.contains('checked')) {
+                        checkedYes = false; // нет — неправильный выбор
+                        yesBox.classList.remove('checked');
+                    }
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                });
+                btn.addEventListener('click', () => stepComplete());
             }
         }
 
-        // открыть конверт (без подсказок, просто реагирует)
-        window.openEnvelope = function() {
-            if (envelopeLocked) return;
-            envelope.classList.add('open');
-        };
-
-        envelope.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (!envelopeLocked) {
-                envelope.classList.add('open');
+        // Завершение шага
+        function stepComplete() {
+            if (currentStep < TOTAL_STEPS - 1) {
+                // следующий шаг
+                currentStep++;
+                stepDisplay.innerText = (currentStep + 1) + '/20';
+                renderChallenge(currentStep);
+            } else {
+                // последний шаг пройден — переключаем на конверт
+                captchaScreen.classList.remove('active');
+                envelopeScreen.classList.add('active');
             }
+        }
+
+        // Начало с первого шага
+        currentStep = 0;
+        stepDisplay.innerText = '1/20';
+        renderChallenge(0);
+
+        // обработчик конверта (анимация открытия)
+        finalEnvelope.addEventListener('click', function() {
+            finalEnvelope.classList.add('open');
         });
 
-        // инициализация: блокируем конверт
-        envelope.classList.add('inactive');
-        renderAll();
-
-        // абсолютно никаких сообщений в интерфейсе, только визуал
-        // даже консоль молчит (почти)
+        // всё, никаких подсказок, только ??? и красиво
     })();
 </script>
 
-<!-- абсолютно никаких подсказок, только имя в коде как знак -->
 <!-- Ей подпишись на моего друга в Телеграмме его Телеграм канал называется klutoist. -->
 </body>
-  </html>
+</html>
