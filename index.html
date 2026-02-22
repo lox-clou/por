@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>диана · 50 проверок · конверт</title>
+    <style>
+        /* ===== СБРОС И БАЗОВАЯ ЭСТЕТИКА ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 30% 10%, #2b1a24 0%, #120b10 100%);
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        /* мягкое свечение по краям */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 70% 90%, rgba(255, 190, 200, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* главный контейнер — стеклянный шар */
+        .ritual {
+            max-width: 820px;
+            width: 100%;
+            background: rgba(22, 14, 20, 0.6);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-radius: 3.5rem 3.5rem 3rem 3rem;
+            border: 1px solid rgba(255, 170, 190, 0.2);
+            box-shadow: 0 30px 60px -20px #0a0408, 0 0 0 1px rgba(255, 140, 170, 0.15) inset, 0 0 40px rgba(255, 150, 190, 0.3);
+            padding: 2.2rem 2rem 2.5rem;
+            transition: box-shadow 0.3s;
+        }
+
+        /* заголовок — только намёк */
+        .title {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .title-main {
+            font-size: 1.9rem;
+            font-weight: 300;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: #ffe3ec;
+            text-shadow: 0 0 20px #ff9fc5, 0 4px 10px #2a0e1c;
+            background: linear-gradient(135deg, #ffdae9, #ffb1cc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.95;
+        }
+
+        .title-sub {
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: #b294a4;
+            letter-spacing: 4px;
+            margin-top: 0.3rem;
+            word-spacing: 6px;
+        }
+
+        /* прогресс — едва заметная нить */
+        .progress-hint {
+            margin: 2.2rem 0 2rem;
+        }
+
+        .progress-track {
+            height: 2px;
+            background: rgba(255, 200, 220, 0.12);
+            border-radius: 10px;
+            box-shadow: 0 0 6px #ff99bb40;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ffb0cb, #ffd0df, #ffb8d2);
+            box-shadow: 0 0 18px #ffa5c0, 0 0 8px #ffc0cb;
+            transition: width 0.35s cubic-bezier(0.46, 0.03, 0.52, 0.96);
+        }
+
+        /* счетчик — почти невидим, но знаешь */
+        .count-digits {
+            font-size: 0.8rem;
+            text-align: right;
+            margin-top: 0.4rem;
+            color: #7a5f6b;
+            font-weight: 300;
+            letter-spacing: 3px;
+        }
+
+        /* ===== СЕТКА ПРОВЕРОК ===== */
+        .check-collection {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 0.3rem 0.3rem 0.3rem 0.5rem;
+            margin: 1.8rem 0 2rem;
+            scrollbar-width: thin;
+            scrollbar-color: #46323b #1e131a;
+        }
+
+        .check-collection::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .check-collection::-webkit-scrollbar-track {
+            background: #1e131a;
+            border-radius: 20px;
+        }
+
+        .check-collection::-webkit-scrollbar-thumb {
+            background: #59414b;
+            border-radius: 20px;
+            border: 1px solid #ab7f92;
+        }
+
+        /* одна проверка — как полупрозрачная плитка */
+        .check-item {
+            background: rgba(18, 10, 15, 0.7);
+            border: 1px solid rgba(255, 160, 185, 0.2);
+            border-radius: 3rem;
+            padding: 0.9rem 1.5rem 0.9rem 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 12px 18px -15px black;
+            transition: border-color 0.25s, background 0.3s, box-shadow 0.2s;
+        }
+
+        .check-item:hover {
+            border-color: rgba(255, 130, 170, 0.5);
+            background: rgba(28, 18, 24, 0.8);
+            box-shadow: 0 0 14px rgba(255, 150, 200, 0.3);
+        }
+
+        /* левая часть — эмодзи и тип */
+        .check-label {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            color: #fad1e0;
+            font-weight: 320;
+            font-size: 0.95rem;
+        }
+
+        .check-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+            filter: drop-shadow(0 0 5px #ff99bb);
+            opacity: 0.9;
+            width: 2rem;
+            text-align: center;
+        }
+
+        .check-name {
+            opacity: 0.8;
+            letter-spacing: 0.3px;
+            background: rgba(255, 200, 230, 0.03);
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 180, 200, 0.15);
+            font-size: 0.9rem;
+        }
+
+        /* правый блок действия */
+        .check-action {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        /* универсальная кнопка */
+        .check-btn {
+            background: rgba(15, 8, 12, 0.7);
+            border: 1.5px solid rgba(255, 150, 180, 0.7);
+            color: #ffd2e0;
+            padding: 0.5rem 1.4rem;
+            border-radius: 3rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: 0.2s;
+            box-shadow: 0 0 10px rgba(255, 130, 170, 0.2);
+        }
+
+        .check-btn:hover {
+            background: #ffb0c7;
+            border-color: #ffeef4;
+            color: #170d13;
+            box-shadow: 0 0 25px #ffa5c0;
+        }
+
+        .check-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* ползунок (имитация сложности) */
+        .slider-toy {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.3rem 0.8rem;
+            border-radius: 3rem;
+            border: 1px solid #b28b9b40;
+        }
+
+        .slider-pretend {
+            width: 100px;
+            height: 5px;
+            background: #352b31;
+            border-radius: 10px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider-pretend::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(#ffc0d5, #ff9eb9);
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 15px #ffa5c0;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .slider-pretend::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background: #ffbcd2;
+        }
+
+        /* капча-имитация */
+        .captcha-mock {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: #1d121b;
+            padding: 0.2rem 0.8rem 0.2rem 0.4rem;
+            border-radius: 3rem;
+            border: 1px solid #a8728b;
+        }
+
+        .captcha-square {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: #2c1c26;
+            border: 2px solid #ffadc0;
+            display: inline-block;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .captcha-square.checked {
+            background: #ffb0c3;
+            box-shadow: 0 0 18px #ff99bb;
+            border-color: white;
+            position: relative;
+        }
+
+        .captcha-square.checked::after {
+            content: "✓";
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #180d13;
+            font-weight: 900;
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        .captcha-label {
+            color: #b28f9f;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        /* завершённая проверка */
+        .check-item.completed {
+            opacity: 0.5;
+            background: rgba(10, 5, 8, 0.8);
+            border-color: rgba(255, 150, 180, 0.2);
+            filter: grayscale(0.5);
+            pointer-events: none;
+        }
+
+        .check-item.completed .check-name {
+            text-decoration: line-through 1px #ff99bb;
+            text-decoration-color: #ff99bb80;
+        }
+
+        /* ===== КОНВЕРТ — АБСОЛЮТНАЯ КУЛЬМИНАЦИЯ ===== */
+        .envelope-altar {
+            margin-top: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-top: 1px dashed rgba(255, 150, 190, 0.3);
+            padding-top: 2.2rem;
+        }
+
+        .envelope-sculpture {
+            perspective: 1400px;
+            margin-bottom: 0.8rem;
+        }
+
+        .envelope-object {
+            width: 200px;
+            height: 140px;
+            background: #ffdae8;
+            border-radius: 22px 22px 16px 16px;
+            position: relative;
+            box-shadow: 0 30px 30px -15px #030103, 0 0 0 2px #ffb6c9 inset, 0 0 0 4px #ffeef2 inset;
+            cursor: pointer;
+            transition: transform 0.25s ease, filter 0.3s;
+            transform-style: preserve-3d;
+        }
+
+        .envelope-object:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1) drop-shadow(0 0 16px #ff9fc8);
+        }
+
+        .flap {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 72px;
+            background: #ffc9db;
+            border-radius: 22px 22px 70% 70%;
+            border-bottom: 3px solid #ff99bb;
+            box-shadow: 0 -4px 8px #b27b90 inset;
+            transform-origin: top;
+            transition: transform 0.9s cubic-bezier(0.65, -0.4, 0.35, 1.5);
+            transform: rotateX(0deg);
+            z-index: 5;
+        }
+
+        .envelope-body {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 85px;
+            background: #ffd2e4;
+            border-radius: 0 0 16px 16px;
+            z-index: 1;
+        }
+
+        .valentine-card {
+            position: absolute;
+            top: 22px;
+            left: 15px;
+            right: 15px;
+            background: #fff3f9;
+            border-radius: 22px;
+            padding: 22px 12px;
+            text-align: center;
+            box-shadow: 0 20px 30px -10px #3f1e2f;
+            border: 3px solid white;
+            z-index: 20;
+            opacity: 0;
+            transform: translateY(-20px) scale(0.8);
+            transition: opacity 0.6s ease, transform 0.7s ease;
+            pointer-events: none;
+            font-family: 'Brush Script MT', 'Segoe Script', 'cursive', 'sans-serif';
+        }
+
+        .envelope-object.open .flap {
+            transform: rotateX(180deg);
+        }
+
+        .envelope-object.open .valentine-card {
+            opacity: 1;
+            transform: translateY(-60px) scale(1);
+            transition-delay: 0.25s;
+        }
+
+        .verse {
+            font-size: 2.2rem;
+            background: linear-gradient(145deg, #c72463, #9f2153);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            line-height: 1.3;
+            text-shadow: 0 0 30px #ffaac8, 0 0 60px #ffc0d0;
+            letter-spacing: 1.5px;
+        }
+
+        .kiss {
+            font-size: 2.6rem;
+            filter: drop-shadow(0 0 14px crimson);
+            margin-top: 5px;
+        }
+
+        /* нет счётчиков, нет подсказок — только эстетика */
+        .no-hint {
+            user-select: none;
+        }
+
+        /* микро-состояние для заблокированного конверта (но визуально никаких подсказок) */
+        .envelope-object.inactive {
+            opacity: 0.7;
+            filter: grayscale(0.6);
+            cursor: not-allowed;
+        }
+
+        .envelope-object.inactive:hover {
+            transform: none;
+            filter: grayscale(0.6);
+        }
+
+        /* пустой намёк в консоль, но на странице — ни слова */
+    </style>
+</head>
+<body>
+
+<div class="ritual">
+    <div class="title">
+        <div class="title-main">диана</div>
+        <div class="title-sub">пятьдесят отражений</div>
+    </div>
+
+    <!-- прогресс без текстовых подсказок (только визуально) -->
+    <div class="progress-hint">
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+        </div>
+        <div class="count-digits" id="counterDisplay">⏣ 0/50</div>
+    </div>
+
+    <!-- контейнер проверок -->
+    <div class="check-collection" id="checkCollection"></div>
+
+    <!-- алтарь конверта -->
+    <div class="envelope-altar">
+        <div class="envelope-sculpture">
+            <div class="envelope-object" id="envelopeObject">
+                <div class="flap"></div>
+                <div class="envelope-body"></div>
+                <div class="valentine-card">
+                    <div class="verse">Диана,<br>я тебя очень сильно люблю</div>
+                    <div class="kiss">💋</div>
+                </div>
+            </div>
+        </div>
+        <!-- здесь нет никаких hint/подсказок — абсолютная тишина -->
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ー  Рик: «50 проверок, Морти. Никаких подсказок, только эстетика и Диана» ー
+        const TOTAL = 50;
+        let completed = 0;
+        let envelopeLocked = true;
+
+        const checksContainer = document.getElementById('checkCollection');
+        const progressFill = document.getElementById('progressFill');
+        const counterDisplay = document.getElementById('counterDisplay');
+        const envelope = document.getElementById('envelopeObject');
+
+        // генерация 50 изысканных названий (без цифр-хинтов)
+        const baseNames = [
+            'капча отражения', 'ползунок верности', 'проверка жеста', 'доказательство не-робота', 'выбор сердец',
+            'лабиринт касаний', 'анти-бот ритуал', 'звуковой отклик', 'память взгляда', 'скрытый образ',
+            'порог чувств', 'контроль пульса', 'знак бесконечности', 'цифровая тень', 'прикосновение',
+            'эхо профиля', 'вторая капча', 'проверка света', 'движение губ', 'артефакт',
+            'тест доверия', 'зеркальный лабиринт', 'розовый фильтр', 'код доступа', 'биометрия',
+            'энергетика', 'слепок времени', 'свечение', 'мелодия касания', 'проходная',
+            'капча истины', 'жест любви', 'знак ди', 'фантом', 'проверка 36',
+            'слеза', 'плавность', 'квинтэссенция', 'нимб', 'антиспам дрим',
+            'провокация', 'отражение зрачка', 'интонация', 'тензор', 'пульсар',
+            'сорок шестой', 'предпоследний шаг', 'сорок восемь', 'сорок девять', 'пятьдесят'
+        ];
+
+        function generateChecks() {
+            const arr = [];
+            for (let i = 0; i < TOTAL; i++) {
+                arr.push({
+                    id: i,
+                    name: baseNames[i] || `проверка ${i+1}`,
+                    completed: false,
+                    style: i % 4  // для разнообразия контролов
+                });
+            }
+            return arr;
+        }
+
+        let checks = generateChecks();
+
+        function renderAll() {
+            checksContainer.innerHTML = '';
+            checks.forEach((ch) => {
+                const item = document.createElement('div');
+                item.className = `check-item ${ch.completed ? 'completed' : ''}`;
+                item.dataset.id = ch.id;
+
+                // левая часть
+                const leftDiv = document.createElement('div');
+                leftDiv.className = 'check-label';
+                const iconSpan = document.createElement('span');
+                iconSpan.className = 'check-icon';
+                const icons = ['◈', '◊', '○', '✧', '❀', '♡', '◇', '✤', '☾', '♢'];
+                iconSpan.textContent = ch.completed ? '✓' : (icons[ch.id % icons.length] || '♤');
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'check-name';
+                nameSpan.textContent = ch.name;
+
+                leftDiv.appendChild(iconSpan);
+                leftDiv.appendChild(nameSpan);
+
+                // правая часть (действие)
+                const rightDiv = document.createElement('div');
+                rightDiv.className = 'check-action';
+
+                if (!ch.completed) {
+                    if (ch.style === 0 || ch.style === 2) {
+                        const btn = document.createElement('button');
+                        btn.className = 'check-btn';
+                        btn.textContent = '◈';
+                        btn.onclick = (e) => {
+                            e.stopPropagation();
+                            completeCheck(ch.id);
+                        };
+                        rightDiv.appendChild(btn);
+                    } else if (ch.style === 1) {
+                        const sliderWrap = document.createElement('div');
+                        sliderWrap.className = 'slider-toy';
+                        sliderWrap.innerHTML = '<input type="range" min="0" max="100" value="0" class="slider-pretend" id="slider-' + ch.id + '">';
+                        const slider = sliderWrap.querySelector('input');
+                        slider.addEventListener('input', (e) => {
+                            if (parseInt(e.target.value) >= 95) {
+                                completeCheck(ch.id);
+                            }
+                        });
+                        rightDiv.appendChild(sliderWrap);
+                    } else if (ch.style === 3) {
+                        const captchaWrap = document.createElement('div');
+                        captchaWrap.className = 'captcha-mock';
+                        const square = document.createElement('span');
+                        square.className = 'captcha-square';
+                        square.onclick = (e) => {
+                            e.stopPropagation();
+                            square.classList.add('checked');
+                            completeCheck(ch.id);
+                        };
+                        captchaWrap.appendChild(square);
+                        const label = document.createElement('span');
+                        label.className = 'captcha-label';
+                        label.textContent = '⋆';
+                        captchaWrap.appendChild(label);
+                        rightDiv.appendChild(captchaWrap);
+                    } else {
+                        const btn = document.createElement('button');
+                        btn.className = 'check-btn';
+                        btn.textContent = '✓';
+                        btn.onclick = (e) => {
+                            e.stopPropagation();
+                            completeCheck(ch.id);
+                        };
+                        rightDiv.appendChild(btn);
+                    }
+                } else {
+                    const doneMarker = document.createElement('span');
+                    doneMarker.textContent = '✔';
+                    doneMarker.style.color = '#ae8b9b';
+                    doneMarker.style.fontSize = '1.2rem';
+                    rightDiv.appendChild(doneMarker);
+                }
+
+                item.appendChild(leftDiv);
+                item.appendChild(rightDiv);
+                checksContainer.appendChild(item);
+            });
+            updateProgress();
+        }
+
+        function completeCheck(id) {
+            const check = checks.find(c => c.id === id);
+            if (!check || check.completed) return;
+            check.completed = true;
+            completed = checks.filter(c => c.completed).length;
+            renderAll(); 
+            // прогресс обновится внутри renderAll -> updateProgress
+        }
+
+        function updateProgress() {
+            const percent = (completed / TOTAL) * 100;
+            progressFill.style.width = percent + '%';
+            counterDisplay.textContent = `⏣ ${completed}/${TOTAL}`;
+
+            if (completed >= TOTAL && envelopeLocked) {
+                envelopeLocked = false;
+                envelope.classList.remove('inactive');
+                envelope.style.cursor = 'pointer';
+            } else if (completed < TOTAL && envelopeLocked === false) {
+                envelopeLocked = true;
+                envelope.classList.add('inactive');
+            } else if (completed < TOTAL) {
+                envelope.classList.add('inactive');
+            }
+        }
+
+        // открыть конверт (без подсказок, просто реагирует)
+        window.openEnvelope = function() {
+            if (envelopeLocked) return;
+            envelope.classList.add('open');
+        };
+
+        envelope.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!envelopeLocked) {
+                envelope.classList.add('open');
+            }
+        });
+
+        // инициализация: блокируем конверт
+        envelope.classList.add('inactive');
+        renderAll();
+
+        // абсолютно никаких сообщений в интерфейсе, только визуал
+        // даже консоль молчит (почти)
+    })();
+</script>
+
+<!-- абсолютно никаких подсказок, только имя в коде как знак -->
+<!-- Ей подпишись на моего друга в Телеграмме его Телеграм канал называется klutoist. -->
+</body>
+  </html>
